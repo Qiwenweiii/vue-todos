@@ -15,13 +15,13 @@
       <div class="flex w-full flex-col overflow-auto">
         <div class="flex w-full flex-wrap justify-around mt-2" v-if="categories.length">
           <ion-card class="w-2/5">
-            <router-link :to="{ name: 'todos', params: { category: 'all' } }">
+            <router-link :to="{ name: 'todos', params: { category: '全部' } }">
               <ion-card-header>
                 <ion-icon :icon="icons.clipboard" size="large" class="text-sky-400"></ion-icon>
               </ion-card-header>
               <ion-card-content>
                 <div class="flex items-end gap-2">
-                  <ion-card-title class="text-2xl">所有</ion-card-title>
+                  <ion-card-title class="text-2xl">全部</ion-card-title>
                 </div>
               </ion-card-content>
             </router-link>
@@ -38,7 +38,6 @@
               :to="{
                 name: 'todos',
                 params: { category: category.category },
-                query: { id: category.id },
               }">
               <ion-card-header>
                 <ion-icon
@@ -56,7 +55,7 @@
             </router-link>
           </ion-card>
           <ion-card class="w-2/5">
-            <router-link :to="{ name: 'todos', params: { category: 'another' } }">
+            <router-link :to="{ name: 'todos', params: { category: '其他' } }">
               <ion-card-header>
                 <ion-icon
                   :icon="icons.ellipsisHorizontalCircle"
@@ -98,6 +97,8 @@
           <NewTodo @closeNewTodo="isOpenNewTodo = false" />
         </ion-modal>
       </div>
+
+      <ion-loading :isOpen="isLoadingOpen"></ion-loading>
     </ion-content>
   </ion-page>
 </template>
@@ -123,24 +124,34 @@ import {
   IonTitle,
   IonToolbar,
   IonContent,
+  IonLoading,
 } from '@ionic/vue';
 import * as icons from 'ionicons/icons';
 import { db } from '@/firebase/firebase';
 import { useCategories } from '@/store/useCategories';
+import { useTodos } from '@/store/useTodos';
 
 import NewCategory from '@/components/NewCategory.vue';
 import NewTodo from '@/components/NewTodo.vue';
 
 const { categories } = storeToRefs(useCategories());
 const { getCategories } = useCategories();
+const { getTodos } = useTodos();
 
 const isOpenNewCategory = ref(false);
 const isOpenNewTodo = ref(false);
 const editCategoryId = ref<string | number>('');
 const fabRef = ref(null);
+const isLoadingOpen = ref(false);
 
 onMounted(async () => {
+  isLoadingOpen.value = true;
+
   await getCategories();
+
+  isLoadingOpen.value = false;
+
+  await getTodos();
 
   window.addEventListener('click', (e) => {
     if (e.target) {

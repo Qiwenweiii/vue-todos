@@ -6,7 +6,6 @@ import {
   getTodosFromFirebase,
   updateTodoInFirebase,
   deleteTodoById,
-  getTodosByCategory,
   deleteTodosByCategoryInFirebase,
 } from '@/firebase/request';
 
@@ -21,9 +20,10 @@ interface Todo {
 
 export const useTodos = defineStore('todos', () => {
   const todos = ref<[Todo?]>([]);
+  const filterTodos = ref<[Todo?]>([]);
 
   const todayTodos = computed(() => {
-    return todos.value.filter((todo) => {
+    return filterTodos.value.filter((todo) => {
       if (todo) {
         return new Date(todo.dueDate).toDateString() === new Date().toDateString() && !todo.done;
       }
@@ -31,7 +31,7 @@ export const useTodos = defineStore('todos', () => {
   });
 
   const lateTodos = computed(() => {
-    return todos.value.filter((todo) => {
+    return filterTodos.value.filter((todo) => {
       if (todo) {
         return new Date(todo.dueDate).getTime() < new Date().getTime() && !todo.done;
       }
@@ -39,7 +39,7 @@ export const useTodos = defineStore('todos', () => {
   });
 
   const laterTodos = computed(() => {
-    return todos.value.filter((todo) => {
+    return filterTodos.value.filter((todo) => {
       if (todo) {
         return (
           new Date(todo.dueDate).getTime() > new Date().getTime() &&
@@ -51,7 +51,7 @@ export const useTodos = defineStore('todos', () => {
   });
 
   const doneTodos = computed(() => {
-    return todos.value.filter((todo) => {
+    return filterTodos.value.filter((todo) => {
       if (todo) {
         return todo.done;
       }
@@ -66,16 +66,17 @@ export const useTodos = defineStore('todos', () => {
     }
   }
 
-  async function getTodos(category: string) {
+  async function getTodos() {
     try {
-      if (category === 'all') {
-        todos.value = await getTodosFromFirebase();
-      } else {
-        todos.value = await getTodosByCategory(category);
-      }
+      todos.value = await getTodosFromFirebase();
     } catch (error) {
       console.log('获取todos失败：', error);
     }
+  }
+
+  function getTodosByCategory(category: string) {
+    filterTodos.value =
+      category === '全部' ? todos.value : todos.value.filter((todo) => todo.category === category);
   }
 
   async function updateTodo(todo: Todo, newTodo: any) {
@@ -126,6 +127,7 @@ export const useTodos = defineStore('todos', () => {
     doneTodos,
     addTodo,
     getTodos,
+    getTodosByCategory,
     updateTodo,
     doneTodo,
     undoneTodo,

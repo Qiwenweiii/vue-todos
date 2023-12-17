@@ -30,22 +30,6 @@ export async function getTodosFromFirebase() {
   return todos;
 }
 
-export async function getTodosByCategory(category: string) {
-  const todos: any = [];
-  const q = query(collection(db, 'todos'), where('category', '==', category));
-
-  const querySnapshot = await getDocs(q);
-
-  querySnapshot.forEach((doc: any) => {
-    todos.push({
-      id: doc.id,
-      ...doc.data(),
-    });
-  });
-
-  return todos;
-}
-
 export async function updateTodoInFirebase(todo: any, field: any) {
   return await updateDoc(doc(db, 'todos', todo.id), field);
 }
@@ -78,12 +62,6 @@ export async function getCategoriesFromFirebase() {
   });
 
   return result;
-}
-
-export async function getCategoryById(id: string) {
-  const category = await getDoc(doc(db, 'categories', id));
-
-  return category.data();
 }
 
 export async function updateCategoryInFirebase(category: any, field: any) {

@@ -169,10 +169,6 @@ onBeforeMount(async () => {
     categoryName.value = props.currentEditCategory.category;
     iconColor.value = props.currentEditCategory.iconColor;
     isUpdate.value = true;
-
-    await getTodos(categoryName.value);
-
-    // console.log(todos.value);
   }
 });
 
@@ -217,6 +213,9 @@ async function deleteCategoryAndTodos() {
   await deleteCategory(props.currentEditCategory);
   await deleteTodosByCategory(categoryName.value);
 
+  // 删除分类和todo后更新一下数据，否则在所有页面中会有数据滞留
+  await getTodos();
+
   emits('close-new-category');
 }
 
@@ -228,7 +227,6 @@ async function onlyDeleteCategory() {
   todos.value.forEach(async (todo: any) => {
     await updateTodo(todo, { ...todo, category: 'another' });
   });
-  console.log('deleted');
   emits('close-new-category');
 }
 </script>

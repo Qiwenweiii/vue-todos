@@ -3,7 +3,6 @@ import { ref } from 'vue';
 
 import {
   getCategoriesFromFirebase,
-  getCategoryById,
   addCategoryToFirebase,
   updateCategoryInFirebase,
   deleteCategoryById,
@@ -11,6 +10,7 @@ import {
 
 export const useCategories = defineStore('categories', () => {
   const categories = ref([]);
+  const currentCategory = ref(null);
 
   const getCategories = async () => {
     try {
@@ -20,12 +20,8 @@ export const useCategories = defineStore('categories', () => {
     }
   };
 
-  const getCategory = async (id: string) => {
-    try {
-      return await getCategoryById(id);
-    } catch (error) {
-      console.log('获取分类信息失败：', error);
-    }
+  const getCategory = (categoryName: string) => {
+    currentCategory.value = categories.value.find((category) => category.category === categoryName);
   };
 
   const addCategory = async (category: any) => {
@@ -54,5 +50,13 @@ export const useCategories = defineStore('categories', () => {
     }
   };
 
-  return { categories, getCategories, getCategory, addCategory, updateCategory, deleteCategory };
+  return {
+    categories,
+    currentCategory,
+    getCategories,
+    getCategory,
+    addCategory,
+    updateCategory,
+    deleteCategory,
+  };
 });
