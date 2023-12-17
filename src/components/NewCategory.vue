@@ -120,8 +120,8 @@ import { useTodos } from '@/store/useTodos';
 
 const router = useRouter();
 const { addCategory, updateCategory, deleteCategory } = useCategories();
-const { deleteTodosByCategory, updateTodo, getTodos } = useTodos();
-const { todos } = storeToRefs(useTodos());
+const { deleteTodosByCategory, updateTodo, getTodos, getTodosByCategory } = useTodos();
+const { filterTodos } = storeToRefs(useTodos());
 
 const actionSheetButtons = [
   {
@@ -169,6 +169,9 @@ onBeforeMount(async () => {
     categoryName.value = props.currentEditCategory.category;
     iconColor.value = props.currentEditCategory.iconColor;
     isUpdate.value = true;
+
+    // 更新 filterTodos
+    getTodosByCategory(props.currentEditCategory.category);
   }
 });
 
@@ -196,14 +199,18 @@ async function handleAdd() {
   };
 
   if (!isUpdate.value) {
-    const newCategoryID = await addCategory(newCategory);
+    await addCategory(newCategory);
     router.push({
       name: 'todos',
       params: { category: categoryName.value },
-      query: { id: newCategoryID },
     });
   } else {
     await updateCategory(props.currentEditCategory, newCategory);
+
+    filterTodos.value.forEach(async (todo: any) => {
+      await updateTodo(todo, { ...todo, category: categoryName.value });
+      await getTodos();
+    });
   }
 
   emits('close-new-category');
@@ -222,9 +229,8 @@ async function deleteCategoryAndTodos() {
 async function onlyDeleteCategory() {
   await deleteCategory(props.currentEditCategory);
 
-  console.log(todos);
-
-  todos.value.forEach(async (todo: any) => {
+  // 更新该分类下的todo信息
+  filterTodos.value.forEach(async (todo: any) => {
     await updateTodo(todo, { ...todo, category: 'another' });
   });
   emits('close-new-category');

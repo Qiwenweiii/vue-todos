@@ -121,6 +121,7 @@ export const useTodos = defineStore('todos', () => {
 
   return {
     todos,
+    filterTodos,
     todayTodos,
     lateTodos,
     laterTodos,
