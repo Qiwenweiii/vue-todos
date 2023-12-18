@@ -162,7 +162,7 @@
             </ion-label>
           </ion-item>
           <ion-item-options side="end">
-            <ion-item-option color="primary" expandable>
+            <ion-item-option color="white" expandable>
               <ion-checkbox :checked="todo?.done" @ion-change="undoneTodo(todo)"></ion-checkbox>
             </ion-item-option>
           </ion-item-options>

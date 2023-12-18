@@ -30,6 +30,14 @@ export const useTodos = defineStore('todos', () => {
     });
   });
 
+  const allTodayTodos = computed(() => {
+    return todos.value.filter((todo) => {
+      if (todo) {
+        return new Date(todo.dueDate).toDateString() === new Date().toDateString() && !todo.done;
+      }
+    });
+  });
+
   const lateTodos = computed(() => {
     return filterTodos.value.filter((todo) => {
       if (todo) {
@@ -123,6 +131,7 @@ export const useTodos = defineStore('todos', () => {
     todos,
     filterTodos,
     todayTodos,
+    allTodayTodos,
     lateTodos,
     laterTodos,
     doneTodos,

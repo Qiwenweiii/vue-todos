@@ -20,8 +20,11 @@
                 <ion-icon :icon="icons.clipboard" size="large" class="text-sky-400"></ion-icon>
               </ion-card-header>
               <ion-card-content>
-                <div class="flex items-end gap-2">
+                <div class="flex items-end justify-between gap-2">
                   <ion-card-title class="text-2xl">全部</ion-card-title>
+                  <ion-badge color="danger" class="text-sm" v-if="getTodayTodosLength()">{{
+                    getTodayTodosLength()
+                  }}</ion-badge>
                 </div>
               </ion-card-content>
             </router-link>
@@ -47,8 +50,15 @@
                   :style="{ color: category.iconColor ?? '' }"></ion-icon>
               </ion-card-header>
               <ion-card-content>
-                <div class="flex items-end gap-2">
+                <div class="flex items-end justify-between gap-2">
                   <ion-card-title class="text-2xl">{{ category.title }}</ion-card-title>
+                  <ion-badge
+                    color="danger"
+                    class="text-sm"
+                    v-if="getTodayTodosLength(category.category)">
+                    {{ getTodayTodosLength(category.category) }}
+                  </ion-badge>
+
                   <!-- <ion-card-subtitle>Tasks</ion-card-subtitle> -->
                 </div>
               </ion-card-content>
@@ -125,6 +135,7 @@ import {
   IonToolbar,
   IonContent,
   IonLoading,
+  IonBadge,
 } from '@ionic/vue';
 import * as icons from 'ionicons/icons';
 import { db } from '@/firebase/firebase';
@@ -136,6 +147,7 @@ import NewTodo from '@/components/NewTodo.vue';
 
 const { categories } = storeToRefs(useCategories());
 const { getCategories } = useCategories();
+const { allTodayTodos } = storeToRefs(useTodos());
 const { getTodos } = useTodos();
 
 const isOpenNewCategory = ref(false);
@@ -148,10 +160,9 @@ onMounted(async () => {
   isLoadingOpen.value = true;
 
   await getCategories();
+  await getTodos();
 
   isLoadingOpen.value = false;
-
-  await getTodos();
 
   window.addEventListener('click', (e) => {
     if (e.target) {
@@ -171,6 +182,16 @@ const currentEditCategory: any = computed(() => {
     ? null
     : categories.value.find((category) => category.id === editCategoryId.value);
 });
+
+const getTodayTodosLength = (category?: string) => {
+  if (category) {
+    return allTodayTodos.value.filter((todo) => {
+      return todo.category === category && todo.done === false;
+    }).length;
+  } else {
+    return allTodayTodos.value.filter((todo) => todo.done === false).length;
+  }
+};
 
 function openNewCategory(id?: string | number) {
   closeFabList();
@@ -196,6 +217,9 @@ function closeFabList() {
 
 onSnapshot(collection(db, 'categories'), async () => {
   await getCategories();
+});
+onSnapshot(collection(db, 'todos'), async () => {
+  await getTodos();
 });
 </script>
 

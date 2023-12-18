@@ -59,21 +59,13 @@
           id="deleteCategory"></ion-icon>
       </div>
 
-      <ion-modal id="example-modal" ref="iconModal" trigger="open-icon-dialog">
+      <ion-modal id="modal" ref="iconModal" trigger="open-icon-dialog">
         <div class="wrapper">
           <h3 class="border-b-1 text-center">请选择图标</h3>
-          <div class="icons-container max-h-64 overflow-auto flex flex-wrap gap-3 justify-between">
-            <ion-icon
-              v-for="(_, iconName) in icons"
-              :key="iconName"
-              :icon="icons[iconName]"
-              size="large"
-              class="cursor-pointer"
-              @click="confirmIcon(iconName)"></ion-icon>
-          </div>
+          <IconList class="icons-container max-h-64 overflow-auto" @confirmIcon="confirmIcon" />
         </div>
       </ion-modal>
-      <ion-modal id="example-modal" ref="colorModal" trigger="open-color-dialog">
+      <ion-modal id="modal" ref="colorModal" trigger="open-color-dialog">
         <div class="wrapper">
           <h3 class="border-b-1 text-center">请选择图标颜色</h3>
           <ColorPicker @confirmColor="confirmColor" />
@@ -115,6 +107,7 @@ import {
 } from '@ionic/vue';
 import * as icons from 'ionicons/icons';
 import ColorPicker from './ColorPicker.vue';
+import IconList from './IconList.vue';
 import { useCategories } from '@/store/useCategories';
 import { useTodos } from '@/store/useTodos';
 
@@ -238,7 +231,7 @@ async function onlyDeleteCategory() {
 </script>
 
 <style scoped>
-ion-modal#example-modal {
+ion-modal#modal {
   --width: fit-content;
   --max-width: 80%;
   --height: fit-content;
@@ -246,11 +239,11 @@ ion-modal#example-modal {
   --box-shadow: 0 28px 48px rgba(0, 0, 0, 0.4);
 }
 
-ion-modal#example-modal h3 {
+ion-modal#modal h3 {
   margin: 20px 20px 10px 20px;
 }
 
-ion-modal#example-modal .wrapper {
+ion-modal#modal .wrapper {
   margin-bottom: 10px;
   padding: 5px;
 }
