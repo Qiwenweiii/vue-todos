@@ -20,11 +20,14 @@
                 <ion-icon :icon="icons.clipboard" size="large" class="text-sky-400"></ion-icon>
               </ion-card-header>
               <ion-card-content>
-                <div class="flex items-end justify-between gap-2">
+                <div class="flex flex-col gap-2">
                   <ion-card-title class="text-2xl">全部</ion-card-title>
-                  <ion-badge color="danger" class="text-sm" v-if="getTodayTodosLength()">{{
-                    getTodayTodosLength()
-                  }}</ion-badge>
+                  <div class="flex items-center justify-between">
+                    <ion-card-subtitle> {{ getUndoTodosLength() }} 项任务待完成 </ion-card-subtitle>
+                    <ion-badge color="danger" class="text-xs" v-if="getTodayUndoTodosLength()">
+                      {{ getTodayUndoTodosLength() }}
+                    </ion-badge>
+                  </div>
                 </div>
               </ion-card-content>
             </router-link>
@@ -50,16 +53,20 @@
                   :style="{ color: category.iconColor ?? '' }"></ion-icon>
               </ion-card-header>
               <ion-card-content>
-                <div class="flex items-end justify-between gap-2">
+                <div class="flex flex-col gap-2">
                   <ion-card-title class="text-2xl">{{ category.title }}</ion-card-title>
-                  <ion-badge
-                    color="danger"
-                    class="text-sm"
-                    v-if="getTodayTodosLength(category.category)">
-                    {{ getTodayTodosLength(category.category) }}
-                  </ion-badge>
 
-                  <!-- <ion-card-subtitle>Tasks</ion-card-subtitle> -->
+                  <div class="flex items-center justify-between">
+                    <ion-card-subtitle>
+                      {{ getUndoTodosLength(category.category) }} 项任务待完成
+                    </ion-card-subtitle>
+                    <ion-badge
+                      color="danger"
+                      class="text-xs"
+                      v-if="getTodayUndoTodosLength(category.category)">
+                      {{ getTodayUndoTodosLength(category.category) }}
+                    </ion-badge>
+                  </div>
                 </div>
               </ion-card-content>
             </router-link>
@@ -73,8 +80,19 @@
                   color="medium"></ion-icon>
               </ion-card-header>
               <ion-card-content>
-                <div class="flex items-end gap-2">
+                <div class="flex flex-col gap-2">
                   <ion-card-title class="text-2xl">其他</ion-card-title>
+                  <div class="flex items-center justify-between">
+                    <ion-card-subtitle>
+                      {{ getUndoTodosLength('其他') }} 项任务待完成
+                    </ion-card-subtitle>
+                    <ion-badge
+                      color="danger"
+                      class="text-sm"
+                      v-if="getTodayUndoTodosLength('其他')">
+                      {{ getTodayUndoTodosLength('其他') }}
+                    </ion-badge>
+                  </div>
                 </div>
               </ion-card-content>
             </router-link>
@@ -125,6 +143,7 @@ import {
   IonIcon,
   IonCardContent,
   IonCardTitle,
+  IonCardSubtitle,
   IonFab,
   IonFabButton,
   IonFabList,
@@ -147,7 +166,7 @@ import NewTodo from '@/components/NewTodo.vue';
 
 const { categories } = storeToRefs(useCategories());
 const { getCategories } = useCategories();
-const { allTodayTodos } = storeToRefs(useTodos());
+const { allTodayAndLaterUndoTodos, allUndoTodos } = storeToRefs(useTodos());
 const { getTodos } = useTodos();
 
 const isOpenNewCategory = ref(false);
@@ -183,13 +202,23 @@ const currentEditCategory: any = computed(() => {
     : categories.value.find((category) => category.id === editCategoryId.value);
 });
 
-const getTodayTodosLength = (category?: string) => {
+const getUndoTodosLength = (category?: string) => {
   if (category) {
-    return allTodayTodos.value.filter((todo) => {
+    return allUndoTodos.value.filter((todo) => {
       return todo.category === category && todo.done === false;
     }).length;
   } else {
-    return allTodayTodos.value.filter((todo) => todo.done === false).length;
+    return allUndoTodos.value.filter((todo) => todo.done === false).length;
+  }
+};
+
+const getTodayUndoTodosLength = (category?: string) => {
+  if (category) {
+    return allTodayAndLaterUndoTodos.value.filter((todo) => {
+      return todo.category === category && todo.done === false;
+    }).length;
+  } else {
+    return allTodayAndLaterUndoTodos.value.filter((todo) => todo.done === false).length;
   }
 };
 

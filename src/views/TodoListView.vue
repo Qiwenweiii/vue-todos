@@ -37,7 +37,8 @@
                 v-if="currentCategory"></ion-icon>
             </template>
           </div>
-          <h2 class="text-2xl">{{ categoryTitle.toUpperCase() }}</h2>
+          <ion-card-title class="text-2xl mb-1">{{ categoryTitle.toUpperCase() }}</ion-card-title>
+          <ion-card-subtitle>{{ undoTodosLength }} 项任务待完成</ion-card-subtitle>
         </ion-toolbar>
       </ion-header>
       <ion-list>
@@ -185,11 +186,13 @@
 </template>
 
 <script setup lang="ts">
-import { onBeforeMount, ref, onBeforeUnmount } from 'vue';
+import { onBeforeMount, ref, onBeforeUnmount, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { storeToRefs } from 'pinia';
 import { onSnapshot, collection } from 'firebase/firestore';
 import {
+  IonCardTitle,
+  IonCardSubtitle,
   IonFab,
   IonFabButton,
   IonCheckbox,
@@ -219,7 +222,7 @@ import { useCategories } from '@/store/useCategories';
 const route = useRoute();
 const { category: categoryTitle } = route.params;
 
-const { todayTodos, lateTodos, laterTodos, doneTodos } = storeToRefs(useTodos());
+const { todayTodos, lateTodos, laterTodos, doneTodos, filterTodos } = storeToRefs(useTodos());
 const { getTodos, getTodosByCategory, doneTodo, undoneTodo, deleteTodo } = useTodos();
 const { currentCategory } = storeToRefs(useCategories());
 const { getCategory } = useCategories();
@@ -230,6 +233,10 @@ const currentEditTodo: any = ref(null);
 onBeforeMount(async () => {
   getTodosByCategory(categoryTitle as string);
   getCategory(categoryTitle as string);
+});
+
+const undoTodosLength = computed(() => {
+  return filterTodos.value.filter((todo: any) => !todo.done).length;
 });
 
 function openNewTodo() {

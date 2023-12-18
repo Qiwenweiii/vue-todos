@@ -30,10 +30,22 @@ export const useTodos = defineStore('todos', () => {
     });
   });
 
-  const allTodayTodos = computed(() => {
+  const allTodayAndLaterUndoTodos = computed(() => {
     return todos.value.filter((todo) => {
       if (todo) {
-        return new Date(todo.dueDate).toDateString() === new Date().toDateString() && !todo.done;
+        return (
+          (new Date(todo.dueDate).toDateString() === new Date().toDateString() ||
+            new Date(todo.dueDate).getTime() < new Date().getTime()) &&
+          !todo.done
+        );
+      }
+    });
+  });
+
+  const allUndoTodos = computed(() => {
+    return todos.value.filter((todo) => {
+      if (todo) {
+        return !todo.done;
       }
     });
   });
@@ -129,9 +141,10 @@ export const useTodos = defineStore('todos', () => {
 
   return {
     todos,
+    allUndoTodos,
     filterTodos,
     todayTodos,
-    allTodayTodos,
+    allTodayAndLaterUndoTodos,
     lateTodos,
     laterTodos,
     doneTodos,

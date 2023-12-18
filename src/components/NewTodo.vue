@@ -75,7 +75,7 @@
                 :value="category.category">
                 {{ category.title }}
               </ion-select-option>
-              <ion-select-option value="another">其他</ion-select-option>
+              <ion-select-option value="其他">其他</ion-select-option>
             </ion-select>
           </Field>
         </ion-item>
@@ -168,7 +168,7 @@ async function handleAddTodo() {
     todo: todo.value,
     dueDate: dueDate.value,
     note: note.value,
-    category: category.value ? category.value : 'another',
+    category: category.value ? category.value : '其他',
     done: false,
   };
   if (!isUpdate.value) {
