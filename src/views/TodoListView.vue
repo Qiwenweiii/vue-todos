@@ -10,7 +10,16 @@
             default-href="/categories"></ion-back-button>
         </ion-buttons>
         <ion-title>{{ categoryTitle.toUpperCase() }} </ion-title>
-        <ion-icon :icon="icons.ellipsisVertical" slot="end" class="text-2xl"></ion-icon>
+        <ion-icon
+          id="pop-trigger"
+          :icon="icons.ellipsisVertical"
+          slot="end"
+          class="text-2xl cursor-pointer"></ion-icon>
+        <ion-popover trigger="pop-trigger" trigger-action="click" :showBackdrop="false">
+          <ion-list>
+            <ion-item>清空列表</ion-item>
+          </ion-list>
+        </ion-popover>
       </ion-toolbar>
     </ion-header>
 
@@ -44,7 +53,7 @@
       <ion-list>
         <ion-list-header>
           <ion-label>
-            今天待完成事项&nbsp;
+            今天待完成&nbsp;
             <span class="text-gray-600 text-base">{{ todayTodos.length }}</span>
           </ion-label>
         </ion-list-header>
@@ -75,7 +84,7 @@
       <ion-list>
         <ion-list-header>
           <ion-label>
-            超时未完成事项&nbsp;
+            超时未完成&nbsp;
             <span class="text-gray-600 text-base">{{ lateTodos.length }}</span>
           </ion-label>
         </ion-list-header>
@@ -106,7 +115,7 @@
       <ion-list>
         <ion-list-header>
           <ion-label>
-            待完成事项&nbsp;
+            待完成&nbsp;
             <span class="text-gray-600 text-base">{{ laterTodos.length }}</span>
           </ion-label>
         </ion-list-header>
@@ -137,7 +146,7 @@
       <ion-list>
         <ion-list-header>
           <ion-label>
-            已完成事项&nbsp;
+            已完成&nbsp;
             <span class="text-gray-600 text-base">{{ doneTodos.length }}</span>
           </ion-label>
         </ion-list-header>
@@ -212,6 +221,7 @@ import {
   IonHeader,
   IonToolbar,
   IonButtons,
+  IonPopover,
 } from '@ionic/vue';
 import * as icons from 'ionicons/icons';
 import NewTodo from '@/components/NewTodo.vue';
